@@ -70,7 +70,6 @@ t/local/referer.t
 t/local/reload-old.t
 t/local/reload.t
 t/local/submit.t
-t/mech-dump.t
 t/new.t
 t/pluggable/01use.t
 t/pluggable/02alsoworks.t
@@ -110,4 +109,3 @@ t/upload.t
 t/warn.t
 t/warnings.t
 Todo
-WWW-Mechanize-Pluggable-0.01.tar

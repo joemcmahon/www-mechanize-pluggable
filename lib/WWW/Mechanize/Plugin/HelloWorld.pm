@@ -54,7 +54,7 @@ L<WWW::Mechanize::Pluggable>, C<WWW::Mechanize>
 
 =head1 CLASS METHODS
 
-=head1 init
+=head2 init
 
 The C<init()> function exports C<hello_world> into the caller's namespace.
 
@@ -65,9 +65,9 @@ sub init {
   *{caller() . '::hello_world'} = \&hello_world;
 }
 
-=head1 hello_world
+=head2 hello_world
 
-Just a demostration function; replaces the current content with 'hello world'.
+Just a demonstration function; replaces the current content with 'hello world'.
 
 =cut 
 
@@ -75,4 +75,5 @@ sub hello_world {
    my ($self) = shift;
    $self->{Mech}->{content} = 'hello world';
 }
+
 1;

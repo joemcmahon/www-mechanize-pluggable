@@ -329,7 +329,7 @@ sub import {
                 # NOTE we should probably use all the stuff we've been given already
                 # but then we can't unload it :(
                 unless (exists $opts{inner} && !$opts{inner}) {
-                    for (list_packages($searchpath)) {
+                    for (_list_packages($searchpath)) {
                         if (defined $opts{'instantiate'} || $opts{'require'}) {
                             eval "CORE::require $_";
                             # *No warnings here* 
@@ -344,7 +344,7 @@ sub import {
 
 
 
-        # push @plugins, map { print STDERR "$_\n"; $_->require } list_packages($_) for (@{$opts{'search_path'}});
+        # push @plugins, map { print STDERR "$_\n"; $_->require } _list_packages($_) for (@{$opts{'search_path'}});
         
         # return blank unless we've found anything
         return () unless @plugins;
@@ -425,7 +425,7 @@ sub import {
 }
 
 
-sub list_packages {
+sub _list_packages {
             my $pack = shift; $pack .= "::" unless $pack =~ m!::$!;
 
             no strict 'refs';
@@ -433,7 +433,7 @@ sub list_packages {
             for (grep !/^main::$/, grep /::$/, keys %{$pack})
             {
                 s!::$!!;
-                my @children = list_packages($pack.$_);
+                my @children = _list_packages($pack.$_);
                 push @packs, "$pack$_" unless @children or /^::/; 
                 push @packs, @children;
             }

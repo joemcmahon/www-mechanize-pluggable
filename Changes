@@ -1,13 +1,19 @@
 Revision history for Perl module WWW::Mechanize::Pluggable
 
-0.02 Thu Jun 30 23:36:34 2005
+0.04 Thu Jul  8 14:38:41 2005 
+	- modifications to Module::Pluggable call to make sure modules
+          are not loaded until first new() call to WWW::Mech::Pluggable
+	- mods to init() to make sure plugins get a good copy of the object
+	- removed test for mech-dump, since we don't install it
+
+0.03 Thu Jun 30 23:36:34 2005
 	- core plugin support working
 	- core hook support working
         - extended documentation for base class and example plugin
         - removed debug warning message in plugin
 	- version numbering fixed in this file
 
-0.03 Tue Jun 28 12:20:34 2005
+0.02 Tue Jun 28 12:20:34 2005
 	- core hook support started
 	- added fixed version of Module::Pluggable and tests
 	- fixes to Makefile.PL for missing prereqs

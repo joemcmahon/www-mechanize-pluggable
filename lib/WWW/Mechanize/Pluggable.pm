@@ -3,14 +3,13 @@ use strict;
 use WWW::Mechanize;
 use YAML;
 
-use Module::Pluggable require => 1,
-                      search_path => [qw(WWW::Mechanize::Plugin)] ;
+use Module::Pluggable search_path => [qw(WWW::Mechanize::Plugin)];
 
 our $AUTOLOAD;
 
 BEGIN {
 	use vars qw ($VERSION);
-	$VERSION     = 0.03;
+	$VERSION     = 0.04;
 }
 
 =head1 NAME
@@ -117,9 +116,9 @@ sub new {
 
   $self->{Mech} = WWW::Mechanize->new(@_);
 
-  $self->init();
   $self->{PreHooks} = {};
   $self->{PostHooks} = {};
+  $self->init();
   $self;
 }
 
@@ -186,9 +185,9 @@ sub init {
   my $self = shift;
   # call all the inits (if defined) in all our 
   # plugins so they can all set up their defaults
-  foreach my $plugin ($self->plugins) {
-    my $init = $plugin . "::init";
-    $self->$init if $self->can('init');
+  foreach my $plugin (__PACKAGE__->plugins) {
+    eval "use $plugin";
+    $plugin->init($self) if $plugin->can('init');
   }
 }
 
@@ -244,6 +243,17 @@ sub AUTOLOAD {
     wantarray ? @ret : $ret;
   }
 }
+
+=head2 clone
+
+An ovveride for C<WWW::Mechanize>'s C<clone()> method; uses YAML to make sure
+that the code references get cloned too. 
+
+There's been some discussion as to whether this is totally adequate (for 
+instance, if the code references are closures, they  won't be properly cloned).
+For now, we'll go with this and see how it works.
+
+=cut 
 
 sub clone {
   my $self = shift;
