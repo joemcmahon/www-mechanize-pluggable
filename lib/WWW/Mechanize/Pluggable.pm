@@ -9,7 +9,7 @@ our $AUTOLOAD;
 
 BEGIN {
 	use vars qw ($VERSION);
-	$VERSION     = 0.08;
+	$VERSION     = 0.09;
 }
 
 =head1 NAME
@@ -262,8 +262,9 @@ reference to the hook sub itself.
 
 sub _remove_hook {
   my ($self, $which, $method, $hook_sub) = @_;
-  $self->{which} = grep { $_ ne $hook_sub} @{$self->{$which}->{$method}}
-    if defined $self->{$which}->{$method};
+  $self->{$which}->{$method} = 
+    [grep { "$_" ne "$hook_sub"} @{$self->{$which}->{$method}}]
+      if defined $self->{$which}->{$method};
 }
 
 =head2 pre_hook
