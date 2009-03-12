@@ -11,7 +11,7 @@ our $AUTOLOAD;
 
 BEGIN {
 	use vars qw ($VERSION);
-	$VERSION     = 0.01;
+	$VERSION     = 0.02;
 }
 
 =head1 NAME
@@ -88,6 +88,8 @@ sub new {
   my $class = shift;
   my $self = $class->SUPER::new(@_);
   $self->init();
+  $self->{PreHooks} = {};
+  $self->{PostHooks} = {};
   $self;
 }
 
@@ -135,7 +137,16 @@ sub AUTOLOAD {
   }
   else {
     # Note that this is where our pre and post hook mechanism will go.
+    if (my $pre_hook = $self->{PreHooks}->{$plain_sub}) {
+      # skip call to actual method if pre_hook returns false.
+      # pre_hook must muck with Mech object to really return anything.
+      return unless $pre_hook->(@_);
+    }
     super; 
+    if (my $post_hook = $self->{PostHooks}->{$plain_sub}) {
+      # Same deal here. Anything you want to return has to go in the object.
+      $post_hook->(@_);
+    }
   }
 }
 

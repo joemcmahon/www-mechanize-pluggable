@@ -44,6 +44,7 @@ EOT
 my @tests = glob File::Spec->catfile( 't', '*.t' );
 push( @tests, glob File::Spec->catfile( 't', 'local', '*.t' ) ) unless $skiplocal;
 push( @tests, glob File::Spec->catfile( 't', 'live', '*.t' ) ) unless $skiplive;
+push( @tests, glob File::Spec->catfile( 't', 'pluggable', '*.t' ) );
 
 my $parms = {
     'NAME'          => 'WWW::Mechanize::Pluggable',
@@ -67,6 +68,7 @@ my $parms = {
         'URI::URL'          => 0,
         'URI::file'         => 0,
 	'WWW::Mechanize'    => 1.12,
+	'SUPER'             => 0,
     },
     test            => { TESTS => join( " ", @tests ) },
     clean           => { FILES => join( " ",'WWW-Mechanize-0*' ) },
