@@ -2,7 +2,7 @@
 
 use warnings;
 use strict;
-use Test::More tests => 14;
+use Test::More tests => 12;
 
 BEGIN {
     use_ok( 'WWW::Mechanize::Pluggable' );
@@ -22,7 +22,6 @@ RES_ON_NEW: {
 NO_AGENT: {
     my $m = WWW::Mechanize::Pluggable->new;
     isa_ok( $m, 'WWW::Mechanize::Pluggable' );
-    can_ok( $m, 'request' );
     like( $m->agent, qr/WWW-Mechanize/, "Set user agent string" );
     like( $m->agent, qr/$WWW::Mechanize::VERSION/, "Set user agent version" );
 
@@ -34,7 +33,6 @@ USER_AGENT: {
     my $alias = "Windows IE 6";
     my $m = WWW::Mechanize::Pluggable->new( agent => $alias );
     isa_ok( $m, 'WWW::Mechanize::Pluggable' );
-    can_ok( $m, 'request' );
     is( $m->agent, $alias, "Aliases don't get translated in the constructor" );
 
     $m->agent_alias( $alias );

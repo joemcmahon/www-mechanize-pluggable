@@ -21,8 +21,8 @@ FIRST_GET: {
 }
 
 INVALIDATE: {
-    undef $agent->{content};
-    undef $agent->{ct};
+    undef $agent->{Mech}->{content};
+    undef $agent->{Mech}->{ct};
     isnt( $agent->title, "Google" );
     ok( !$agent->is_html );
 }

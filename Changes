@@ -1,6 +1,13 @@
 Revision history for Perl module WWW::Mechanize::Pluggable
 
-0.01 Tue Jun 28 12:20:34 2005
+0.02 Thu Jun 30 23:36:34 2005
+	- core plugin support working
+	- core hook support working
+        - extended documentation for base class and example plugin
+        - removed debug warning message in plugin
+	- version numbering fixed in this file
+
+0.03 Tue Jun 28 12:20:34 2005
 	- core hook support started
 	- added fixed version of Module::Pluggable and tests
 	- fixes to Makefile.PL for missing prereqs

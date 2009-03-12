@@ -7,14 +7,14 @@ use LocalServer;
 
 BEGIN { delete @ENV{ qw( http_proxy HTTP_PROXY ) }; }
 BEGIN {
-    use_ok( 'WWW::Mechanize::Pluggable' );
+    use_ok( 'WWW::Mechanize' );
 }
 
 my $server = LocalServer->spawn;
 isa_ok( $server, 'LocalServer' );
 
-my $agent = WWW::Mechanize::Pluggable->new;
-isa_ok( $agent, 'WWW::Mechanize::Pluggable', 'Created object' );
+my $agent = WWW::Mechanize->new;
+isa_ok( $agent, 'WWW::Mechanize', 'Created object' );
 
 NO_GET: {
     my $r = $agent->reload;
@@ -31,8 +31,8 @@ FIRST_GET: {
 }
 
 INVALIDATE: {
-    undef $agent->{Mech}->{content};
-    undef $agent->{Mech}->{ct};
+    undef $agent->{content};
+    undef $agent->{ct};
     isnt( $agent->title, "WWW::Mechanize::Shell test page" );
     ok( !$agent->is_html );
 }

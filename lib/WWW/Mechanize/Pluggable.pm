@@ -1,8 +1,7 @@
 package WWW::Mechanize::Pluggable;
 use strict;
 use WWW::Mechanize;
-use base qw(WWW::Mechanize);
-use SUPER;
+use YAML;
 
 use Module::Pluggable require => 1,
                       search_path => [qw(WWW::Mechanize::Plugin)] ;
@@ -11,7 +10,7 @@ our $AUTOLOAD;
 
 BEGIN {
 	use vars qw ($VERSION);
-	$VERSION     = 0.02;
+	$VERSION     = 0.03;
 }
 
 =head1 NAME
@@ -43,6 +42,33 @@ methods received, plus a reference to the actvive C<Mech> object.
 
 All other extensions to C<WWW::Mechanize::Pluggable> are handled by the
 plugins.
+
+=head1 SUBCLASSING
+
+Subclassing this class is not recommended; partly because the method 
+redispatch we need to do internally doesn't play well with the standard
+Perl OO model, and partly because you should be using plugins and hooks 
+instead. 
+
+In C<WWW::Mechanize>, it is recommended that you extend functionality by
+subclassing C<WWW::Mechanize>, because there's no other way to extend the
+class. With C<Module::Pluggable> support, it is easy to load another method
+directly into C<WWW::Mechanize::Pluggable>'s namespace; it then appears as
+if it had always been there. In addition, the C<pre_hook()> and C<post_hook()>
+methods provide a way to intercept a call and replace it with your output, or
+to tack on further processing at the end of a standard method (or even a 
+plugin!). 
+
+The advantage of this is in not having a large number of subclasses, all of
+which add or alter C<WWW::Mechanize>'s function, and all of which have to be
+loaded if you want them available in your code. With 
+C<WWW::Mechanize::Pluggable>, one simply installs the desired plugins and they
+are all automatically available when you C<use WWW::Mechanize::Pluggable>.
+
+Configuration is a possible problem area; if three different plugins all 
+attempt to replace C<get()>, only one will win. It's better to create more
+sophisticated methods that call on lower-level ones than to alter existing
+known behavior.
 
 =head1 USAGE
 
@@ -86,11 +112,66 @@ its pre and port hook queues.
 
 sub new {
   my $class = shift;
-  my $self = $class->SUPER::new(@_);
+  my $self = {};
+  bless $self, $class;
+
+  $self->{Mech} = WWW::Mechanize->new(@_);
+
   $self->init();
   $self->{PreHooks} = {};
   $self->{PostHooks} = {};
   $self;
+}
+
+=head2 insert_hook
+
+Adds a hook to a hook queue.
+
+Needs the queue name, the method name of the method being hooked, and a
+reference to the hook sub itself.
+
+=cut
+
+sub insert_hook {
+  my ($self, $which, $method, $hook_sub) = @_;
+  push @{$self->{$which}->{$method}}, $hook_sub;
+}
+
+=head2 remove_hook
+
+Adds a hook to a hook queue.
+
+Needs the queue name, the method name of the method being hooked, and a
+reference to the hook sub itself.
+
+=cut
+
+sub remove_hook {
+  my ($self, $which, $method, $hook_sub) = @_;
+  $self->{which} = grep { $_ ne $hook_sub} @{$self->{$which}->{$method}}
+    if defined $self->{$which}->{$method};
+}
+
+=head2 pre_hook
+
+Shortcut to add a hook to a method's pre queue.
+
+=cut
+
+sub pre_hook {
+  my $self = shift;
+  $self->insert_hook(PreHooks=>@_);
+}
+
+=head2 post_hook
+
+Shortcut to add a hook to a method's post queue.
+
+=cut
+
+sub post_hook {
+  my $self = shift;
+  $self->insert_hook(PostHooks=>@_);
 }
 
 =head2 init
@@ -129,25 +210,44 @@ sub AUTOLOAD {
 
   # figure out what was supposed to be called.
   (my $super_sub = $AUTOLOAD) =~ s/::Pluggable//;
-  (my $plain_sub = $AUTOLOAD) =~ /.*::(.*)$/;
+  my ($plain_sub) = ($AUTOLOAD =~ /.*::(.*)$/);
 
   if (scalar @_ == 0 or !defined $_[0] or !ref $_[0]) {
     no strict 'refs';
     $super_sub->(@_);
   }
   else {
-    # Note that this is where our pre and post hook mechanism will go.
+    my ($ret, @ret) = "";
+    shift @_;
     if (my $pre_hook = $self->{PreHooks}->{$plain_sub}) {
       # skip call to actual method if pre_hook returns false.
       # pre_hook must muck with Mech object to really return anything.
-      return unless $pre_hook->(@_);
+      #
+      # may want to add processing to abort queue run.
+      foreach my $hook (@$pre_hook) {
+        $hook->($self, $self->{Mech}, @_);
+      }
     }
-    super; 
+    if (wantarray) {
+      @ret = $self->{Mech}->$plain_sub(@_);
+    }
+    else {
+      $ret = $self->{Mech}->$plain_sub(@_);
+    }
     if (my $post_hook = $self->{PostHooks}->{$plain_sub}) {
       # Same deal here. Anything you want to return has to go in the object.
-      $post_hook->(@_);
+      foreach my $hook (@$post_hook) {
+        $hook->($self, $self->{Mech}, @_);
+      }
     }
+    undef $self->{Entered};
+    wantarray ? @ret : $ret;
   }
+}
+
+sub clone {
+  my $self = shift;
+  return Load(Dump($self));
 }
 
 1; #this line is important and will help the module return a true value

@@ -67,23 +67,23 @@ $mech->back();
 is( $mech->base, $first_base, "Did the base get set back?" );
 is( $mech->title, $title, "Title set back?" );
 
-is( scalar @{$mech->{page_stack}}, 0, "Pre-search check" );
+is( scalar @{$mech->{Mech}->{page_stack}}, 0, "Pre-search check" );
 $mech->submit_form(
     fields => { 'q' => "perl" },
 );
 ok( $mech->success, "Searched for Perl" );
 like( $mech->title, qr/search.cgi/, "Right page title" );
-is( scalar @{$mech->{page_stack}}, 1, "POST is in the stack" );
+is( scalar @{$mech->{Mech}->{page_stack}}, 1, "POST is in the stack" );
 
 $mech->head( $server->url );
 ok( $mech->success, "HEAD succeeded" );
-is( scalar @{$mech->{page_stack}}, 1, "HEAD is not in the stack" );
+is( scalar @{$mech->{Mech}->{page_stack}}, 1, "HEAD is not in the stack" );
 
 $mech->back();
 ok( $mech->success, "Back" );
 is( $mech->base, $first_base, "Did the base get set back?" );
 is( $mech->title, $title, "Title set back?" );
-is( scalar @{$mech->{page_stack}}, 0, "Post-search check" );
+is( scalar @{$mech->{Mech}->{page_stack}}, 0, "Post-search check" );
 
 =head2 Back and misc. internal fields
 
@@ -123,7 +123,7 @@ my @links = qw(
     modules/
 );
 
-is( scalar @{$mech->{page_stack}}, 0, "Pre-404 check" );
+is( scalar @{$mech->{Mech}->{page_stack}}, 0, "Pre-404 check" );
 
 my $server404 = HTTP::Daemon->new or die;
 my $server404url = $server404->url;
@@ -131,7 +131,7 @@ my $server404url = $server404->url;
 die "Cannot fork" if (! defined (my $pid404 = fork()));
 END {
     local $?;
-    kill KILL => $pid404; # Extreme prejudice intended, because we do not
+    kill KILL => $pid404 if defined $pid404; # Extreme prejudice intended, because we do not
     # want the global cleanup to be done twice.
 }
 
@@ -147,11 +147,11 @@ if (! $pid404) { # Fake HTTP server code: a true 404-compliant server!
 $mech->get($server404url);
 is( $mech->status, 404 , "404 check");
 
-is( scalar @{$mech->{page_stack}}, 1, "Even 404s get on the stack" );
+is( scalar @{$mech->{Mech}->{page_stack}}, 1, "Even 404s get on the stack" );
 
 $mech->back();
 is( $mech->uri, $server->url, "Back from the 404" );
-is( scalar @{$mech->{page_stack}}, 0, "Post-404 check" );
+is( scalar @{$mech->{Mech}->{page_stack}}, 0, "Post-404 check" );
 
 for my $link ( @links ) {
     $mech->get( $link );

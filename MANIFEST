@@ -50,6 +50,7 @@ t/live/follow.t
 t/live/follow_link.t
 t/live/form.t
 t/live/get.t
+t/live/hooks.t
 t/live/reload.t
 t/live/submit.t
 t/local/back.t
@@ -59,12 +60,14 @@ t/local/failure.t
 t/local/follow.t
 t/local/form.t
 t/local/get.t
+t/local/hooks.t
 t/local/LocalServer.pm
 t/local/log-server
-t/local/overload.t
 t/local/page_stack.t
+t/local/plugin.t
 t/local/referer-server
 t/local/referer.t
+t/local/reload-old.t
 t/local/reload.t
 t/local/submit.t
 t/mech-dump.t
@@ -94,7 +97,6 @@ t/pluggable/13except.t
 t/pluggable/13exceptarray.t
 t/pluggable/13exceptregex.t
 t/pluggable/14package.t
-t/plugins/test.plugin
 t/pod-coverage.t
 t/pod.t
 t/regex-error.t
@@ -108,3 +110,4 @@ t/upload.t
 t/warn.t
 t/warnings.t
 Todo
+WWW-Mechanize-Pluggable-0.01.tar
