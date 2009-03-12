@@ -31,8 +31,8 @@ FIRST_GET: {
 }
 
 INVALIDATE: {
-    undef $agent->{Mech}->{content};
-    undef $agent->{Mech}->{ct};
+    undef $agent->mech->{content};
+    undef $agent->mech->{ct};
     isnt( $agent->title, "WWW::Mechanize::Shell test page" );
     ok( !$agent->is_html );
 }

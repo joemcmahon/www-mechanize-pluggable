@@ -9,7 +9,7 @@ our $AUTOLOAD;
 
 BEGIN {
 	use vars qw ($VERSION);
-	$VERSION     = 0.04;
+	$VERSION     = 0.05;
 }
 
 =head1 NAME
@@ -114,12 +114,28 @@ sub new {
   my $self = {};
   bless $self, $class;
 
-  $self->{Mech} = WWW::Mechanize->new(@_);
+  $self->mech(WWW::Mechanize->new(@_));
 
   $self->{PreHooks} = {};
   $self->{PostHooks} = {};
   $self->init();
   $self;
+}
+
+=head2 mech
+
+Returns the component C<WWW::Mechanize> object.
+
+We don't use C<Class::Accessor> because we want this class to have no
+superclass (other than C<UNIVERSAL>); if we C<use base qw(Class::Accessor)>,
+C<Class::Accessor>'s C<AUTOLOAD> gets control instead of ours.
+
+=cut
+
+sub mech {
+  my ($self, $mech) = @_;
+  $self->{Mech} = $mech if defined $mech;
+  $self->{Mech};
 }
 
 =head2 insert_hook
@@ -218,25 +234,27 @@ sub AUTOLOAD {
   else {
     my ($ret, @ret) = "";
     shift @_;
+    my $skip;
     if (my $pre_hook = $self->{PreHooks}->{$plain_sub}) {
       # skip call to actual method if pre_hook returns false.
       # pre_hook must muck with Mech object to really return anything.
-      #
-      # may want to add processing to abort queue run.
       foreach my $hook (@$pre_hook) {
-        $hook->($self, $self->{Mech}, @_);
+        my $result = $hook->($self, $self->mech, @_);
+        $skip ||=  (defined $result) && ($result == -1);
       }
     }
-    if (wantarray) {
-      @ret = $self->{Mech}->$plain_sub(@_);
-    }
-    else {
-      $ret = $self->{Mech}->$plain_sub(@_);
+    unless ($skip) {
+      if (wantarray) {
+        @ret = $self->mech->$plain_sub(@_);
+      }
+      else {
+        $ret = $self->mech->$plain_sub(@_);
+      }
     }
     if (my $post_hook = $self->{PostHooks}->{$plain_sub}) {
       # Same deal here. Anything you want to return has to go in the object.
       foreach my $hook (@$post_hook) {
-        $hook->($self, $self->{Mech}, @_);
+        $hook->($self, $self->mech, @_);
       }
     }
     undef $self->{Entered};

@@ -18,10 +18,10 @@ like( $mech->title, qr/Google/ );
 
 my $form_number_1 = $mech->form_number(1);
 isa_ok( $form_number_1, 'HTML::Form', "Can select the first form");
-is( $mech->current_form(), $mech->{Mech}->{forms}->[0], "Set the form attribute" );
+is( $mech->current_form(), $mech->mech->{forms}->[0], "Set the form attribute" );
 
 ok( !$mech->form(99), "Can't select the 99th form");
-is( $mech->current_form(), $mech->{Mech}->{forms}->[0], "Form is still set to 1" );
+is( $mech->current_form(), $mech->mech->{forms}->[0], "Form is still set to 1" );
 
 
 my $form_name_f = $mech->form_name('f');

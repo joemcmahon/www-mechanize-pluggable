@@ -1,4 +1,3 @@
-require 5.6.1;
 use ExtUtils::MakeMaker qw( WriteMakefile prompt );
 use ExtUtils::Command qw( touch rm_f );
 use File::Spec;
@@ -68,7 +67,6 @@ my $parms = {
         'URI::URL'          => 0,
         'URI::file'         => 0,
 	'WWW::Mechanize'    => 1.12,
-	'SUPER'             => 0,
     },
     test            => { TESTS => join( " ", @tests ) },
     clean           => { FILES => join( " ",'WWW-Mechanize-0*' ) },
