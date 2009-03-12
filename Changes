@@ -1,5 +1,9 @@
 Revision history for Perl module WWW::Mechanize::Pluggable
 
+1.01 Fri Jun 23 15:48:46 PDT 2006
+	- replaced YAML with Data::Dump::Streamer for cloning;
+	  fewer prereqs.
+
 1.00 Tue Apr  4 14:59:38 PDT 2006
 	- fixed ugly problem with parameterized plugins;
  	  removed the "elimate parameters" business that

@@ -1,5 +1,7 @@
 Changes
 lib/WWW/Mechanize/Pluggable.pm
+lib/WWW/Mechanize/Pluggable/Design.pm
+lib/WWW/Mechanize/Plugin/Cookbook.pm
 lib/WWW/Mechanize/Plugin/HelloWorld.pm
 LICENSE
 Makefile.PL
@@ -42,6 +44,7 @@ t/live/hooks.t
 t/live/reload.t
 t/live/submit.t
 t/local/back.t
+t/local/back.t.orig
 t/local/click.t
 t/local/click_button.t
 t/local/failure.t

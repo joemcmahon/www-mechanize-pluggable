@@ -96,3 +96,12 @@ here; wo hope to extract the "pluggability" into a completely
 separate module in the very near future, allowing the creation
 of C<::Pluggable> versions of any module you please.
 
+=head2 The Pluggable interface
+
+
+
+=cut
+
+use strict;  # or get dinged by CPANTS
+1;
+

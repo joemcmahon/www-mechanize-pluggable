@@ -84,7 +84,7 @@ my $parms = {
         'URI::URL'          => 0,
         'URI::file'         => 0,
 	'WWW::Mechanize'    => 1.12,
-        'YAML'              => 0,
+        'Data::Dump::Streamer' => 0,
     },
     test            => { TESTS => join( " ", @tests ) },
     clean           => { FILES => join( " ",'WWW-Mechanize-0*' ) },

@@ -282,3 +282,9 @@ The Perl Advent Calendar (http://www.perladvent.org/2004/6th/) for bringing Modu
 Damian Conway, for showing us how to do things that Just Work.
 
 Andy Lester, for WWW::Mechanize.
+
+=cut
+
+use strict;  # or get dinged by CPANTS
+
+"It's only documentation but I like it";

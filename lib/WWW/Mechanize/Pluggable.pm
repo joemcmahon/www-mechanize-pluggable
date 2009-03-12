@@ -1,7 +1,7 @@
 package WWW::Mechanize::Pluggable;
 use strict;
 use WWW::Mechanize;
-use YAML;
+use Data::Dump::Streamer;
 
 use Module::Pluggable search_path => [qw(WWW::Mechanize::Plugin)];
 
@@ -9,7 +9,7 @@ our $AUTOLOAD;
 
 BEGIN {
 	use vars qw ($VERSION);
-	$VERSION     = "1.00";
+	$VERSION     = "1.01";
 }
 
 =head1 NAME
@@ -384,8 +384,23 @@ For now, we'll go with this and see how it works.
 
 sub clone {
   my $self = shift;
-  return Load(Dump($self));
+  # Name created by eval; works out to a no-op.
+  my $value = 
+  eval { no strict; 
+         local $WWW_Mechanize_Pluggable1; 
+         eval Dump($self)->Out(); 
+         $WWW_Mechanize_Pluggable1; 
+       };
+  die "clone failed: $@\n" if $@;
+  return $value;
 }
+
+=head1 TODO
+
+The plugin mechanism is ridiculously programmer-intensive. This needs to be
+replaced with something better.
+
+=cut
 
 1; #this line is important and will help the module return a true value
 __END__
