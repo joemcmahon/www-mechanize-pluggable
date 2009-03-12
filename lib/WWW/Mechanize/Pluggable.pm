@@ -9,7 +9,7 @@ our $AUTOLOAD;
 
 BEGIN {
 	use vars qw ($VERSION);
-	$VERSION     = 0.09;
+	$VERSION     = "0.10";
 }
 
 =head1 NAME
@@ -136,7 +136,7 @@ sub import {
     eval "require $plugin";
     $plugin->import(@_); 
     map {$deletes{$_}++} $plugin->remove_args
-      if $plugin->can('remove_args');;
+      if $plugin->can('remove_args');
   }
   for (my $i = 0; $i < scalar @_; $i++) {
      splice(@_,$i,2) if defined $deletes{$_[$i]};
@@ -291,6 +291,19 @@ sub post_hook {
   $self->_insert_hook(PostHooks=>@_);
 }
 
+=head2 last_method 
+
+Records the last method used to call C<WWW::Mechanize::Pluggable>.
+This allows plugins to call a method again if necessary without
+having to know what method was actually called.
+
+=cut
+
+sub last_method {
+  my($self, $method) = @_;
+  $self->{LastMethod} = $method if defined $method;
+  $self->{LastMethod};
+}
 
 =head1 AUTOLOAD
 
@@ -316,6 +329,13 @@ sub AUTOLOAD {
   # figure out what was supposed to be called.
   (my $super_sub = $AUTOLOAD) =~ s/::Pluggable//;
   my ($plain_sub) = ($AUTOLOAD =~ /.*::(.*)$/);
+
+  # Record the method name so plugins can check it.
+  # We check for $self being a ref because this could
+  # be a class method call. (Plugins won't be able to
+  # re-call class methods, but I can't think of a reason
+  # why we'd need that for now, so we'll skip it.)
+  $self->last_method($plain_sub) if ref $self;
 
   if (scalar @_ == 0 or !defined $_[0] or !ref $_[0]) {
     no strict 'refs';
