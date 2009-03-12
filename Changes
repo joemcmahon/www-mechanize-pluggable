@@ -1,4 +1,8 @@
 Revision history for Perl module WWW::Mechanize::Pluggable
+1.04  Wed Sep 19 18:17:22 PDT 2007
+	- Updated t/local/back.t to be more cautious about whether it
+          should try to kill the (possibly nonexistent) HTTP:Daemon.
+	  Thanks to Andreas Koenig for this one,
 
 1.03 Tue Sep 18 14:41:05 PDT 2007
 	- Updated tests to match newest WWW::Mechanize

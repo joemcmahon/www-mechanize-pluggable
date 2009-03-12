@@ -135,7 +135,8 @@ SKIP: {
 
     END {
         local $?;
-        kill KILL=>$pid404; # Extreme prejudice intended;
+        kill KILL=>$pid404 if defined $pid404; 
+                            # Extreme prejudice intended;
                             # avoid doing global cleanup twice.
     }
 
