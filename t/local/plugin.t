@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 14;
+use Test::More tests => 13;
 use Test::Exception;
 
 use lib 't/local';
@@ -23,7 +23,6 @@ isa_ok( $response, 'HTTP::Response' );
 isa_ok( $agent->response, 'HTTP::Response' );
 ok( $response->is_success );
 ok( $agent->success, "Get webpage" );
-is( ref $agent->uri, "", "URI should be a string, not an object" );
 is( $agent->ct, "text/html", "Got the content-type..." );
 ok( $agent->is_html, "... and the is_html wrapper" );
 is( $agent->title, "WWW::Mechanize::Shell test page" );

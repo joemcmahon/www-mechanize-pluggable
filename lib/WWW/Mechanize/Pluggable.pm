@@ -2,14 +2,16 @@ package WWW::Mechanize::Pluggable;
 use strict;
 use WWW::Mechanize;
 use Data::Dump::Streamer;
+use Carp qw(croak);
 
-use Module::Pluggable search_path => [qw(WWW::Mechanize::Plugin)];
+use Module::Pluggable search_path => [ qw(WWW::Mechanize::Plugin) ],
+                      'require'   => 1;
 
 our $AUTOLOAD;
 
 BEGIN {
 	use vars qw ($VERSION);
-	$VERSION     = "1.01";
+	$VERSION     = "1.03";
 }
 
 =head1 NAME
@@ -132,7 +134,6 @@ So each plugin only sees what it's supposed to.
 sub import {
   my ($class, %plugin_args) = @_; 
   foreach my $plugin (__PACKAGE__->plugins) {
-    eval "require $plugin";
     my ($plugin_name) = ($plugin =~ /.*::(.*)$/);
     if (exists $plugin_args{$plugin_name} and 
         $plugin->can('import')) {
@@ -176,7 +177,6 @@ sub init {
   # plugins so they can all set up their defaults
   my @deletes;
   foreach my $plugin (__PACKAGE__->plugins) {
-    eval "use $plugin";
     if ($plugin->can('init')) {
       push @deletes, $plugin->init($self, %args);
     }
@@ -206,9 +206,24 @@ sub new {
   delete $args{$_} foreach @deletes;
   
 
-  $self->mech(WWW::Mechanize->new(%args));
+  $self->mech($self->_create_mech_object(\%args));
 
   $self;
+}
+
+=head2 _create_mech_object
+
+Create the WWW::Mechanize object. Optional parameter '_Pluggable_mech_class'
+specifies a different class, e.g. Test::WWW::Mechanize.
+
+=cut
+
+sub _create_mech_object {
+    my ($self, $args) = @_;
+
+    my $mech_class = delete $args->{_Pluggable_mech_class};
+    $mech_class = 'WWW::Mechanize' if !defined($mech_class);
+    $mech_class->new(%$args);
 }
 
 =head2 mech
@@ -353,10 +368,12 @@ sub AUTOLOAD {
     }
     unless ($skip) {
       if (wantarray) {
-        @ret = $self->mech->$plain_sub(@_);
+        @ret = eval { $self->mech->$plain_sub(@_) };
+        croak $@ if $@;
       }
       else {
-        $ret = $self->mech->$plain_sub(@_);
+        $ret = eval { $self->mech->$plain_sub(@_) };
+        croak $@ if $@;
       }
     }
     if (my $post_hook = $self->{PostHooks}->{$plain_sub}) {

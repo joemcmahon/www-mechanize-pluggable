@@ -118,3 +118,5 @@ t/upload.t
 t/warn.t
 t/warnings.t
 Todo
+t/00.load.t
+t/lib/WWW/Mechanize/Plugin/Deeply/Nested.pm

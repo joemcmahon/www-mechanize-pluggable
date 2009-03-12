@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 19;
+use Test::More tests => 16;
 
 use lib 't/local';
 use LocalServer;
@@ -38,7 +38,6 @@ isa_ok( $response, 'HTTP::Response' );
 isa_ok( $mech->response, 'HTTP::Response' );
 ok( $response->is_success );
 ok( $mech->success, "Get webpage" );
-is( ref $mech->uri, "", "URI should be a string, not an object" );
 is( $mech->ct, "text/html", "Got the content-type..." );
 ok( $mech->is_html, "... and the is_html wrapper" );
 is( $mech->title, "WWW::Mechanize::Shell test page" );
@@ -48,8 +47,6 @@ $mech->post_hook('get',\&post_hook);
 
 $mech->get( '/foo/' );
 ok( $mech->success, 'Got the /foo' );
-is( $mech->uri, sprintf('%sfoo/',$server->url), "Got relative OK" );
-is( ref $mech->uri, "", "URI shouldn't be an object" );
 ok( $mech->is_html,"Got HTML back" );
 is( $mech->title, "WWW::Mechanize::Shell test page", "Got the right page" );
 is $mech->{HOOK_OUTPUT}, "pre done pre done and post done", "hooks were called";

@@ -76,9 +76,9 @@ this will make it possible for C<WWW::Mechanize::Pluggable>
 to remove the "used-up" parameters from the c<use> line by
 returning the keys you want to have removed.
 
-Here's a sample C<init> method:
+Here's a sample C<import> method:
 
-  sub init {
+  sub import {
     my($class, %args) = @_;
     if defined(my $value = $args{'mine'}) {
       if (_is_appropriate($value)) {
@@ -127,7 +127,7 @@ Sample init function:
     $parent_object->{_myplugin_foo} = "my data";
     *{caller() . '::myplugin_method'} = \&my_implementation;
     $parent_object->pre_hook('get', sub { &my_prehook(@_) } );
-    $parent_object->ost_hook('get', sub { &my_prehook(@_) } );
+    $parent_object->post_hook('get', sub { &my_prehook(@_) } );
     my @removed;
     if ($args{'my_arg'}) {
        # process my_arg
