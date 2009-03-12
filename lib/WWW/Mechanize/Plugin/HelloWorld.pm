@@ -54,6 +54,24 @@ L<WWW::Mechanize::Pluggable>, C<WWW::Mechanize>
 
 =head1 CLASS METHODS
 
+=head2 import
+
+This function snags any 'helloworld' key-value pair off the 
+C<use WWW::Mechanize> line and sets the C<HELLO> key to it.
+
+Currently this uses a global variable in the C<WW::Mechanize::Pluggable>
+namespace to capture the value. This is icky and should be replaced
+with something more elegant.
+
+=cut
+
+sub import {
+  my ($class, %args) = @_;
+  if (defined $args{'helloworld'}) {
+    $WWW::Mechanize::Pluggable::HelloWorld = $args{'helloworld'};
+  }
+}
+
 =head2 init
 
 The C<init()> function exports C<hello_world> into the caller's namespace.
@@ -68,12 +86,16 @@ sub init {
 =head2 hello_world
 
 Just a demonstration function; replaces the current content with 'hello world'.
+It should be noted that this is not going to pass most tests for "successfully
+fetched page" because C<WWW::Mechanize> hasn't processed a valid
+request-response pair.
 
 =cut 
 
 sub hello_world {
    my ($self) = shift;
    $self->{Mech}->{content} = 'hello world';
+   $self->{HELLO} = $WWW::Mechanize::Pluggable::HelloWorld;
 }
 
 1;

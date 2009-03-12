@@ -1,13 +1,30 @@
+use 5.006;
 use ExtUtils::MakeMaker qw( WriteMakefile prompt );
 use ExtUtils::Command qw( touch rm_f );
 use File::Spec;
 use strict;
 
 # Essentially a clone of WWW::Mech's Makefile.PL.
-my $skiplive = grep /--nolive/i, @ARGV;
-my $skiplocal = grep /--nolocal/i, @ARGV;
+my $runlive = grep /--runlive/i, @ARGV;
+my $skiplocal = grep /--skiplocal/i, @ARGV;
+my $runtaint = grep /--runtaint/i, @ARGV;
 
-if ( !$skiplive ) {
+if ( $runtaint ) {
+  print <<EOT;
+   You have enabled taint testing. You may need to check
+   yout PATH environment variable for the tests to run
+   successfully.
+EOT
+}
+else {
+  print <<EOT;
+   You have disabled taint testing. You may want to 
+   enable it if you need to be absolutely sure that 
+   this module is secure.
+EOT
+}
+
+if ( $runlive ) {
     require IO::Socket;
     my $s = IO::Socket::INET->new(
         PeerAddr => "www.google.com:80",
@@ -15,35 +32,34 @@ if ( !$skiplive ) {
     );
     if ($s) {
         close($s);
-        $skiplive = 0;
+        $runlive = 1;
 
         print <<EOT;
 
-Part of WWW::Mechanize's test suite is run live tests against Google.
-Since it looks like you're connected to the Internet, these test will
-be enabled.  If you want to disable these tests, re-run Makefile.PL with
-the --skiplive switch.
+    You have enabled the live tests (run against Google). There's no guarantee
+    that they haven't changed something and broken these, so if these tests
+    fail, it may not be this module's fault.
 
 EOT
     } else {
         print <<EOT;
 
-    It seems that you are not directly connected to the Internet.  Some
+    It seems that you are not directly connected to the Internet.  
     of the WWW::Mechanize tests interact with websites such as Google,
     in addition to its own internal tests.
 
 EOT
 
         if ( prompt("Do you want to skip these tests?", "y") =~ /^y/i ) {
-            $skiplive = 1;
+            $runlive = 1;
         }
     } # failed connect
 }
 
 my @tests = glob File::Spec->catfile( 't', '*.t' );
 push( @tests, glob File::Spec->catfile( 't', 'local', '*.t' ) ) unless $skiplocal;
-push( @tests, glob File::Spec->catfile( 't', 'live', '*.t' ) ) unless $skiplive;
-push( @tests, glob File::Spec->catfile( 't', 'pluggable', '*.t' ) );
+push( @tests, glob File::Spec->catfile( 't', 'live', '*.t' ) ) if $runlive;
+push( @tests, glob File::Spec->catfile( 't', ($runtaint ? 'taint':'notaint'), '*.t' ) );
 
 my $parms = {
     'NAME'          => 'WWW::Mechanize::Pluggable',
@@ -62,11 +78,14 @@ my $parms = {
         'HTTP::Status'      => 0,
         'LWP'               => 5.76,
         'LWP::UserAgent'    => 2.024,
+        'Module::Pluggable' => 0,
         'Test::More'        => 0.34,
+        'Test::Exception'   => 0.20,
         'URI'               => 1.25,
         'URI::URL'          => 0,
         'URI::file'         => 0,
 	'WWW::Mechanize'    => 1.12,
+        'YAML'              => 0,
     },
     test            => { TESTS => join( " ", @tests ) },
     clean           => { FILES => join( " ",'WWW-Mechanize-0*' ) },

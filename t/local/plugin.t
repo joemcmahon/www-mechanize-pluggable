@@ -1,14 +1,13 @@
 use warnings;
 use strict;
-use Test::More tests => 13;
+use Test::More tests => 14;
+use Test::Exception;
 
 use lib 't/local';
 use LocalServer;
 
 BEGIN { delete @ENV{ qw( http_proxy HTTP_PROXY ) }; }
-BEGIN {
-    use_ok( 'WWW::Mechanize::Pluggable' );
-}
+use WWW::Mechanize::Pluggable helloworld=>"WORLD";
 
 eval "use Test::Memory::Cycle";
 my $canTMC = !$@;
@@ -29,8 +28,9 @@ is( $agent->ct, "text/html", "Got the content-type..." );
 ok( $agent->is_html, "... and the is_html wrapper" );
 is( $agent->title, "WWW::Mechanize::Shell test page" );
 
-$agent->hello_world();
+lives_ok {$agent->hello_world()} "hello_world doesn't die";
 is( $agent->content, "hello world", "plugin worked");
+is $agent->{HELLO}, 'WORLD', 'pseudo-import worked';
 
 SKIP: {
     skip "Test::Memory::Cycle not installed", 1 unless $canTMC;

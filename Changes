@@ -1,8 +1,15 @@
 Revision history for Perl module WWW::Mechanize::Pluggable
 
+0.06 Tue Aug 16 12:30:40 2005
+	- added -notaint option to tests and Makefile.PL
+        - expanded docs
+
 0.05 Tue Jul 26 15:42:08 2005
 	- minor change to return checking for pre hooks; a 
 	  plugin which returned undef would get a nasty warning
+	- reorder creation of WWW::Mechanize object in new() to 
+	  allow plugins to modify prereq classes before the object
+	  is created
 
 0.04 Thu Jul  8 14:38:41 2005 
 	- modifications to Module::Pluggable call to make sure modules

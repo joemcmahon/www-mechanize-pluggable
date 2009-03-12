@@ -9,7 +9,7 @@ our $AUTOLOAD;
 
 BEGIN {
 	use vars qw ($VERSION);
-	$VERSION     = 0.05;
+	$VERSION     = 0.06;
 }
 
 =head1 NAME
@@ -102,6 +102,46 @@ L<WWW::Mechanize>
 
 =head1 CLASS METHODS
 
+=head2 import
+
+Handles the delegation of import options to the appropriate plugins.
+
+C<import> loads the plugins (found via a call to C<__PACKAGE__->plugins>) using 
+C<erquire>; it then calls each plugin's C<import> method with the parameters
+supplied on the C<use> statement for C<WWW::Mechanize::Pluggable>. The 
+plugin's C<import> method is expected to return a list of argument
+naems that are to be ermoved from the global argument list.
+
+An example is definitely in order here. Let's take the example
+
+  use WWW::Mechanize::Pluggable foo => 1, bar => [qw(a b c)],
+                                baz => 'quux';
+
+As each plugin's C<import> is called, it gets whatever is currently in the list,
+so we start off with all the parameters. If the first plugin returns
+C<('foo', 'baz'), then it's presumed to have sucessfully processed these
+parameters, and they are removed from the list. So the next plugin gets
+called only with C<bar => [qw(a b c)]>. 
+
+A plugin can return either a null list or C<undef> to leave the 
+parameter list alone.
+
+=cut 
+
+sub import {
+  my %deletes;
+  shift; 
+  foreach my $plugin (__PACKAGE__->plugins) {
+    eval "require $plugin";
+    $plugin->import(@_); 
+    map {$deletes{$_}++} $plugin->remove_args
+      if $plugin->can('remove_args');;
+  }
+  for (my $i = 0; $i < scalar @_; $i++) {
+     splice(@_,$i,2) if defined $deletes{$_[$i]};
+  }
+}
+
 =head2 new
 
 C<new> constructs a C<WWW::Mechanize::Pluggable> object and initializes
@@ -114,11 +154,13 @@ sub new {
   my $self = {};
   bless $self, $class;
 
-  $self->mech(WWW::Mechanize->new(@_));
 
   $self->{PreHooks} = {};
   $self->{PostHooks} = {};
   $self->init();
+
+  $self->mech(WWW::Mechanize->new(@_));
+
   $self;
 }
 
@@ -126,9 +168,16 @@ sub new {
 
 Returns the component C<WWW::Mechanize> object.
 
-We don't use C<Class::Accessor> because we want this class to have no
-superclass (other than C<UNIVERSAL>); if we C<use base qw(Class::Accessor)>,
-C<Class::Accessor>'s C<AUTOLOAD> gets control instead of ours.
+This is a simple set/get accessor; normally we'd just use L<Class::Accessor>
+to create it and forget about the details. We don't use C<Class::Accessor>,
+though, because we want the C<WWW::Mechanize::Pluggable> class to have no
+superclass (other than C<UNIVERSAL>).
+
+This is necessary because we use X<AUTOLOAD> (q.v.) to trap all of the calls
+to this class so they can be pre- and post-processed before being passed on
+to the underlying C<WWW::Mechanize> object.  If we C<use base qw(Class::Accessor)>,
+as is needed to make it work properly, C<Class::Accessor>'s C<AUTOLOAD> gets control 
+instead of ours, and the hooks don't work.
 
 =cut
 
@@ -138,30 +187,31 @@ sub mech {
   $self->{Mech};
 }
 
-=head2 insert_hook
+=head2 _insert_hook
 
-Adds a hook to a hook queue.
+Adds a hook to a hook queue. This is a utility routine, encapsulating
+the hook queu manipulation in a single method.
 
 Needs the queue name, the method name of the method being hooked, and a
 reference to the hook sub itself.
 
 =cut
 
-sub insert_hook {
+sub _insert_hook {
   my ($self, $which, $method, $hook_sub) = @_;
   push @{$self->{$which}->{$method}}, $hook_sub;
 }
 
-=head2 remove_hook
+=head2 _remove_hook
 
-Adds a hook to a hook queue.
+Deletes a hook from a hook queue.
 
 Needs the queue name, the method name of the method being hooked, and a
 reference to the hook sub itself.
 
 =cut
 
-sub remove_hook {
+sub _remove_hook {
   my ($self, $which, $method, $hook_sub) = @_;
   $self->{which} = grep { $_ ne $hook_sub} @{$self->{$which}->{$method}}
     if defined $self->{$which}->{$method};
@@ -175,7 +225,7 @@ Shortcut to add a hook to a method's pre queue.
 
 sub pre_hook {
   my $self = shift;
-  $self->insert_hook(PreHooks=>@_);
+  $self->_insert_hook(PreHooks=>@_);
 }
 
 =head2 post_hook
@@ -186,13 +236,13 @@ Shortcut to add a hook to a method's post queue.
 
 sub post_hook {
   my $self = shift;
-  $self->insert_hook(PostHooks=>@_);
+  $self->_insert_hook(PostHooks=>@_);
 }
 
 =head2 init
 
 C<init> runs through all of the plugins for this class and calls 
-their init methods (if they exist). Not meant to be called by your
+their C<init> methods (if they exist). Not meant to be called by your
 code; it's internal-use-only.
 
 =cut 
@@ -210,10 +260,16 @@ sub init {
 
 =head1 AUTOLOAD
 
-C<AUTOLOAD> here is carefully tweaked to push anything we don't understand
-(either subroutine call or  method call) to the parent class(es). Note that
-since SUPER searches the I<entire> inheritance tree, we just have to add 
-classes to @ISA to get C<SUPER> to look in them.
+This subroutine implements a mix of the "decorator" pattern and
+the "proxy" pattern. It intercepts all the calls to the underlying class,
+and also wraps them with pre-hooks (called before the method is called)
+and post-hooks (called after the method is called). This allows us to
+provide all of the functionality of C<WWW::Mechanize> in this class
+without copying any of the code, and to alter the behavior as well 
+without altering the original class.
+
+Pre-hooks can cause the actual method call to the underlying class
+to be skipped altogether by returning a true value.
 
 =cut
 
@@ -257,7 +313,6 @@ sub AUTOLOAD {
         $hook->($self, $self->mech, @_);
       }
     }
-    undef $self->{Entered};
     wantarray ? @ret : $ret;
   }
 }
@@ -265,7 +320,9 @@ sub AUTOLOAD {
 =head2 clone
 
 An ovveride for C<WWW::Mechanize>'s C<clone()> method; uses YAML to make sure
-that the code references get cloned too. 
+that the code references get cloned too. Note that this is important for 
+later code (the cache stuff in particular); general users won't notice 
+any real difference.
 
 There's been some discussion as to whether this is totally adequate (for 
 instance, if the code references are closures, they  won't be properly cloned).
