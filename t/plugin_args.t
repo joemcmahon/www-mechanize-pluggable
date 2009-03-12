@@ -17,4 +17,4 @@ my $empty = new WWW::Mechanize::Pluggable;
 is $empty->preserved, undef, "No args works ok";
 
 my $have1 = new WWW::Mechanize::Pluggable foo=>'bar', baz=>'quux';
-is $have1->preserved, "foo => bar; baz => quux; ", "args work too";
+is $have1->preserved, "baz => quux; foo => bar; ", "args work too";

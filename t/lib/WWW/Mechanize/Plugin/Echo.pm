@@ -11,7 +11,7 @@ sub init {
   my ($class, $pluggable, %args)  = @_;
   local $_;
   if (keys %args) {
-    $pluggable->preserved(join "",map {"$_ => $args{$_}; "} (keys %args));
+    $pluggable->preserved(join "",map {"$_ => $args{$_}; "} (sort keys %args));
   }
   keys %args;
 }
