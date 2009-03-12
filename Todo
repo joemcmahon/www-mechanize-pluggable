@@ -1,0 +1,6 @@
+TODO list for Perl module WWW::Mechanize::Pluggable
+
+- Write some plugin tests with a fake plugin
+- Get more data as to what we'll need for the pre/post hooks
+- Consider Module::Trigger as the trigger mechanism?
+
