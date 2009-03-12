@@ -7,7 +7,7 @@ use lib 't/local';
 use LocalServer;
 
 BEGIN { delete @ENV{ qw( http_proxy HTTP_PROXY ) }; }
-use WWW::Mechanize::Pluggable helloworld=>"WORLD";
+use WWW::Mechanize::Pluggable HelloWorld=>[helloworld=>'WORLD'];
 
 eval "use Test::Memory::Cycle";
 my $canTMC = !$@;

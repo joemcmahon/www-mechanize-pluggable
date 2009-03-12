@@ -129,38 +129,41 @@ is( scalar @{$mech->mech->{page_stack}}, 0, "Pre-404 check" );
 my $server404 = HTTP::Daemon->new or die;
 my $server404url = $server404->url;
 
-die "Cannot fork" if (! defined (my $pid404 = fork()));
-END {
-    local $?;
-    kill KILL => $pid404 if defined $pid404; # Extreme prejudice intended, because we do not
-    # want the global cleanup to be done twice.
-}
+SKIP: {
+    skip "fork() unavailable", 10 
+        if ($^O eq 'MSWin32' || ! defined (my $pid404 = fork()));
 
-if (! $pid404) { # Fake HTTP server code: a true 404-compliant server!
-    while ( my $c = $server404->accept() ) {
-        while ( $c->get_request() ) {
-            $c->send_response( new HTTP::Response(404) );
-            $c->close();
+    END {
+        local $?;
+        kill KILL=>$pid404; # Extreme prejudice intended;
+                            # avoid doing global cleanup twice.
+    }
+
+    if (! $pid404) { # Fake HTTP server code: a true 404-compliant server!
+        while ( my $c = $server404->accept() ) {
+            while ( $c->get_request() ) {
+                $c->send_response( new HTTP::Response(404) );
+                $c->close();
+            }
         }
     }
-}
+    $mech->get($server404url);
+    is( $mech->status, 404 , "404 check");
 
-$mech->get($server404url);
-is( $mech->status, 404 , "404 check");
-
-is( scalar @{$mech->mech->{page_stack}}, 1, "Even 404s get on the stack" );
-
-$mech->back();
-is( $mech->uri, $server->url, "Back from the 404" );
-is( scalar @{$mech->mech->{page_stack}}, 0, "Post-404 check" );
-
-for my $link ( @links ) {
-    $mech->get( $link );
-    warn $mech->status() if (! $mech->success());
-    is( $mech->status, 200, "Get $link" );
+    is( scalar @{$mech->mech->{page_stack}}, 1, "Even 404s get on the stack" );
 
     $mech->back();
-    is( $mech->uri, $server->url, "Back from $link" );
+    is( $mech->uri, $server->url, "Back from the 404" );
+    is( scalar @{$mech->mech->{page_stack}}, 0, "Post-404 check" );
+
+    for my $link ( @links ) {
+        $mech->get( $link );
+        warn $mech->status() if (! $mech->success());
+        is( $mech->status, 200, "Get $link" );
+
+        $mech->back();
+        is( $mech->uri, $server->url, "Back from $link" );
+    }
 }
 
 SKIP: {

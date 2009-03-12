@@ -9,7 +9,7 @@ our $AUTOLOAD;
 
 BEGIN {
 	use vars qw ($VERSION);
-	$VERSION     = "0.10";
+	$VERSION     = "1.00";
 }
 
 =head1 NAME
@@ -108,38 +108,36 @@ Handles the delegation of import options to the appropriate plugins.
 
 C<import> loads the plugins (found via a call to C<__PACKAGE__->plugins>) using 
 C<erquire>; it then calls each plugin's C<import> method with the parameters
-supplied on the C<use> statement for C<WWW::Mechanize::Pluggable>. The 
-plugin's C<import> method is expected to return a list of argument
-naems that are to be ermoved from the global argument list.
+specific to it, if there are any.
 
 =head3 What your plugin sees
 
 Let's take the example
 
-  use WWW::Mechanize::Pluggable foo => 1, bar => [qw(a b c)],
-                                baz => 'quux';
+  use WWW::Mechanize::Pluggable Zonk => [foo => 1, bar => [qw(a b c)]],
+                                Thud => [baz => 'quux'];
 
-Your C<import> gets whatever is currently in the list, so we start off with
-all the parameters. If your C<import> returns C<('foo', 'baz')>, then it's 
-presumed to have sucessfully processed these parameters, and they are removed 
-from the list. So the next plugin gets called only with C<bar => [qw(a b c)]>. 
+C<WWW::Mechanize::Plugin::Zonk>'s import() would get called like this:
 
-A plugin can return either a null list or C<undef> to leave the 
-parameter list alone.
+  WWW::Mechanize::Plugin::Zonk->import(foo => 1, bar => [qw(a b c)]);
+
+And C<WWW::Mechanize::Plugin::Thud>'s import() would get 
+
+  WWW::Mechanize::Plugin::Thud->import(baz => 'quux');
+
+So each plugin only sees what it's supposed to.
 
 =cut 
 
 sub import {
-  my %deletes;
-  shift; 
+  my ($class, %plugin_args) = @_; 
   foreach my $plugin (__PACKAGE__->plugins) {
     eval "require $plugin";
-    $plugin->import(@_); 
-    map {$deletes{$_}++} $plugin->remove_args
-      if $plugin->can('remove_args');
-  }
-  for (my $i = 0; $i < scalar @_; $i++) {
-     splice(@_,$i,2) if defined $deletes{$_[$i]};
+    my ($plugin_name) = ($plugin =~ /.*::(.*)$/);
+    if (exists $plugin_args{$plugin_name} and 
+        $plugin->can('import')) {
+      $plugin->import( @{ $plugin_args{$plugin_name} } );
+    }
   }
 }
 

@@ -1,5 +1,15 @@
 Revision history for Perl module WWW::Mechanize::Pluggable
 
+1.00 Tue Apr  4 14:59:38 PDT 2006
+	- fixed ugly problem with parameterized plugins;
+ 	  removed the "elimate parameters" business that
+	  was a hack; replaced with by-plugin-name
+	  parameterization.
+
+0.11 Fri Mar 31 13:22:39 PST 2006
+	- fork() fix in tests for Win32 and other OS'es 
+	  without fork()
+
 0.10 Wed Nov 23 09:03:46 2005 
 	- last_method added to allow plugins to see what method
 	  was called (and optionally call it again if needed).
