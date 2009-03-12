@@ -1,5 +1,11 @@
 Revision history for Perl module WWW::Mechanize::Pluggable
 
+0.07 Tue Sep 13 12:41:57 2005 
+	- Plugin arguments to new() are now supported via init()
+	- clarified init() interface; added docs for deleting params
+	- added test Echo plugin and plugin_args.t
+        - added cookbook
+
 0.06 Tue Aug 16 12:30:40 2005
 	- added -notaint option to tests and Makefile.PL
         - expanded docs

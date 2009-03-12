@@ -9,7 +9,7 @@ our $AUTOLOAD;
 
 BEGIN {
 	use vars qw ($VERSION);
-	$VERSION     = 0.06;
+	$VERSION     = 0.07;
 }
 
 =head1 NAME
@@ -112,16 +112,17 @@ supplied on the C<use> statement for C<WWW::Mechanize::Pluggable>. The
 plugin's C<import> method is expected to return a list of argument
 naems that are to be ermoved from the global argument list.
 
-An example is definitely in order here. Let's take the example
+=head3 What your plugin sees
+
+Let's take the example
 
   use WWW::Mechanize::Pluggable foo => 1, bar => [qw(a b c)],
                                 baz => 'quux';
 
-As each plugin's C<import> is called, it gets whatever is currently in the list,
-so we start off with all the parameters. If the first plugin returns
-C<('foo', 'baz'), then it's presumed to have sucessfully processed these
-parameters, and they are removed from the list. So the next plugin gets
-called only with C<bar => [qw(a b c)]>. 
+Your C<import> gets whatever is currently in the list, so we start off with
+all the parameters. If your C<import> returns C<('foo', 'baz')>, then it's 
+presumed to have sucessfully processed these parameters, and they are removed 
+from the list. So the next plugin gets called only with C<bar => [qw(a b c)]>. 
 
 A plugin can return either a null list or C<undef> to leave the 
 parameter list alone.
@@ -142,24 +143,72 @@ sub import {
   }
 }
 
+=head2 init
+
+C<init> runs through all of the plugins for this class and calls 
+their C<init> methods (if they exist). Not meant to be called by your
+code; it's internal-use-only.
+
+C<init> gets all of the arguments supplied to C<new>; it can 
+process them or not as it pleases.
+
+=head3 What your plugin sees
+
+Your plugin's C<init> gets a reference to the C<Pluggable> object
+plus the list of parameters supplied to the C<new()> call. This is
+assumewd to be a set of zero or more key/value pairs.
+
+C<init> can return a list of keys to be deleted from the parameter
+hash; this allows plugins to process parameters themselves without
+the internal C<WWW::Mechanize> object ever seeing them. If you
+return a null list, nothing gets deleted.
+
+As an example:
+
+   my $mech = new WWW::Mechanize::Pluggable foo=>'bar';
+
+A plugin's C<init> could process the C<foo> argument and return C<foo>;
+this parameter would then be deleted from the arguments. 
+
+=cut 
+
+sub init {
+  my ($self, %args) = @_;
+  # call all the inits (if defined) in all our 
+  # plugins so they can all set up their defaults
+  my @deletes;
+  foreach my $plugin (__PACKAGE__->plugins) {
+    eval "use $plugin";
+    if ($plugin->can('init')) {
+      push @deletes, $plugin->init($self, %args);
+    }
+  }
+  @deletes;
+}
+
 =head2 new
 
 C<new> constructs a C<WWW::Mechanize::Pluggable> object and initializes
-its pre and port hook queues.
+its pre and port hook queues. You can add parameters to be passed to 
+plugins' C<init> methods by adding them to this C<new> call.
 
 =cut
 
 sub new {
-  my $class = shift;
+  my ($class, %args) = @_;
   my $self = {};
   bless $self, $class;
 
 
   $self->{PreHooks} = {};
   $self->{PostHooks} = {};
-  $self->init();
+  my @deletes = $self->init(%args);
 
-  $self->mech(WWW::Mechanize->new(@_));
+  local $_;
+  delete $args{$_} foreach @deletes;
+  
+
+  $self->mech(WWW::Mechanize->new(%args));
 
   $self;
 }
@@ -190,7 +239,7 @@ sub mech {
 =head2 _insert_hook
 
 Adds a hook to a hook queue. This is a utility routine, encapsulating
-the hook queu manipulation in a single method.
+the hook queue manipulation in a single method.
 
 Needs the queue name, the method name of the method being hooked, and a
 reference to the hook sub itself.
@@ -219,7 +268,8 @@ sub _remove_hook {
 
 =head2 pre_hook
 
-Shortcut to add a hook to a method's pre queue.
+Shortcut to add a hook to a method's pre queue. Needs a method name
+and a reference to a subroutine to be called as the hook.
 
 =cut
 
@@ -230,31 +280,14 @@ sub pre_hook {
 
 =head2 post_hook
 
-Shortcut to add a hook to a method's post queue.
+Shortcut to add a hook to a method's post queue. Needs a method
+name and a reference to the subroutine to be called as the hook.
 
 =cut
 
 sub post_hook {
   my $self = shift;
   $self->_insert_hook(PostHooks=>@_);
-}
-
-=head2 init
-
-C<init> runs through all of the plugins for this class and calls 
-their C<init> methods (if they exist). Not meant to be called by your
-code; it's internal-use-only.
-
-=cut 
-
-sub init {
-  my $self = shift;
-  # call all the inits (if defined) in all our 
-  # plugins so they can all set up their defaults
-  foreach my $plugin (__PACKAGE__->plugins) {
-    eval "use $plugin";
-    $plugin->init($self) if $plugin->can('init');
-  }
 }
 
 
