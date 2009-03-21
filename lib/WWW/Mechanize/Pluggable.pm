@@ -11,12 +11,12 @@ our $AUTOLOAD;
 
 BEGIN {
 	use vars qw ($VERSION);
-	$VERSION     = "1.04";
+	$VERSION     = "1.05";
 }
 
 =head1 NAME
 
-WWW::Mechanize::Pluggable - custmomizable via plugins
+WWW::Mechanize::Pluggable - A WWW::Mechanize that's custmomizable via plugins
 
 =head1 SYNOPSIS
 

@@ -14,7 +14,7 @@ my $server = LocalServer->spawn;
 isa_ok( $server, 'LocalServer' );
 
 
-my $mech = WWW::Mechanize::Pluggable->new;
+my $mech = WWW::Mechanize::Pluggable->new( autocheck => 0 );
 isa_ok( $mech, 'WWW::Mechanize::Pluggable', 'Created object' );
 
 GOOD_PAGE: {

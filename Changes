@@ -1,4 +1,11 @@
 Revision history for Perl module WWW::Mechanize::Pluggable
+
+1.05  Sat Mar 21 16:24:38 PDT 2009
+	- Updates to handle WWW::Mechanize API changes
+	  -- autoocheck now defaults to 1
+	  -- _pop_page_stack is gone
+	  -- other minor test changes
+
 1.04  Wed Sep 19 18:17:22 PDT 2007
 	- Updated t/local/back.t to be more cautious about whether it
           should try to kill the (possibly nonexistent) HTTP:Daemon.

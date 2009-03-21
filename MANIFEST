@@ -1,4 +1,5 @@
 Changes
+lib/Module/Pluggable.pm
 lib/WWW/Mechanize/Pluggable.pm
 lib/WWW/Mechanize/Pluggable/Design.pm
 lib/WWW/Mechanize/Plugin/Cookbook.pm
@@ -8,8 +9,10 @@ Makefile.PL
 MANIFEST			This list of files
 META.yml
 README
+t/00.load.t
 t/001_load.t
 t/002_plugin.t
+t/acme/Acme/MyTest/Plugin/Foo.pm
 t/add_header.t
 t/aliases.t
 t/area_link.html
@@ -17,6 +20,7 @@ t/area_link.t
 t/autocheck.t
 t/clone.t
 t/die.t
+t/errors.err
 t/field.html
 t/field.t
 t/find_image.t
@@ -31,6 +35,18 @@ t/hooks.t
 t/image-new.t
 t/image-parse.html
 t/image-parse.t
+t/lib/Acme/MyTest/Plugin/Foo.pm
+t/lib/InnerTest/Plugin/Foo.pm
+t/lib/MyOtherTest/Plugin/Bar.pm
+t/lib/MyOtherTest/Plugin/Foo.pm
+t/lib/MyOtherTest/Plugin/Quux.pm
+t/lib/MyOtherTest/Plugin/Quux/Foo.pm
+t/lib/MyTest/Extend/Plugin/Bar.pm
+t/lib/MyTest/Plugin/Bar.pm
+t/lib/MyTest/Plugin/Foo.pm
+t/lib/MyTest/Plugin/Quux/Foo.pm
+t/lib/WWW/Mechanize/Plugin/Deeply/Nested.pm
+t/lib/WWW/Mechanize/Plugin/Echo.pm
 t/link-base.t
 t/link-relative.t
 t/link.t
@@ -54,6 +70,7 @@ t/local/get.t
 t/local/hooks.t
 t/local/LocalServer.pm
 t/local/log-server
+t/local/overload.t
 t/local/page_stack.t
 t/local/plugin.t
 t/local/referer-server
@@ -61,6 +78,7 @@ t/local/referer.t
 t/local/reload-old.t
 t/local/reload.t
 t/local/submit.t
+t/mech-dump.t
 t/new.t
 t/notaint/00.load.t
 t/notaint/aliases.t
@@ -96,6 +114,8 @@ t/pluggable/13except.t
 t/pluggable/13exceptarray.t
 t/pluggable/13exceptregex.t
 t/pluggable/14package.t
+t/plugin_args.t
+t/plugins/test.plugin
 t/pod-coverage.t
 t/pod.t
 t/regex-error.t
@@ -118,5 +138,3 @@ t/upload.t
 t/warn.t
 t/warnings.t
 Todo
-t/00.load.t
-t/lib/WWW/Mechanize/Plugin/Deeply/Nested.pm

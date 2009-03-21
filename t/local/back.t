@@ -25,7 +25,7 @@ BEGIN {
 eval 'use Test::Memory::Cycle';
 my $cycle_not_available = $@;
 
-my $mech = WWW::Mechanize::Pluggable->new(cookie_jar => {});
+my $mech = WWW::Mechanize::Pluggable->new(cookie_jar => {}, autocheck => 0);
 isa_ok( $mech, "WWW::Mechanize::Pluggable" );
 ok(defined($mech->cookie_jar()),
    'this $mech starts with a cookie jar');
@@ -62,7 +62,7 @@ $mech->back();
 is( $mech->base, $first_base, "Did the base get set back?" );
 is( $mech->title, $title, "Title set back?" );
 
-$mech->follow_link( name => "Images" );
+$mech->follow_link( text => "Images" );
 ok( $mech->success, 'Followed OK' );
 
 $mech->back();
@@ -97,7 +97,7 @@ browser does not cause it to go away).
 
 =cut
 
-$mech->follow_link( name => "Images" );
+$mech->follow_link( text => "Images" );
 $mech->reload();
 $mech->back();
 is($mech->title, $title, "reload() does not push page to stack" );
@@ -113,7 +113,7 @@ SKIP: {
     memory_cycle_ok( $mech, "No memory cycles found" );
 }
 
-$mech = WWW::Mechanize::Pluggable->new();
+$mech = WWW::Mechanize::Pluggable->new( autocheck => 0);
 isa_ok( $mech, "WWW::Mechanize::Pluggable" );
 $mech->get( $server->url );
 ok( $mech->success, 'Got root URL' );

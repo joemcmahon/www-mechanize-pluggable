@@ -18,7 +18,7 @@ BEGIN {
 }
 
 AUTOCHECK_OFF: {
-    my $mech = WWW::Mechanize::Pluggable->new;
+    my $mech = WWW::Mechanize::Pluggable->new(autocheck=>0);
     isa_ok( $mech, 'WWW::Mechanize::Pluggable' );
 
     $mech->get( NONEXISTENT );

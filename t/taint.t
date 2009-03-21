@@ -4,12 +4,14 @@ use warnings;
 use strict;
 use Test::More;
 use URI;
+BEGIN {
+    eval "use Test::Taint";
+    ($^O) = ($^O =~ /.*/);
 
-eval "use Test::Taint";
-($^O) = ($^O =~ /.*/);
+    plan skip_all => "Test::Taint required for checking taintedness" if $@;
 
-plan skip_all => "Test::Taint required for checking taintedness" if $@;
-plan tests=>6;
+    plan tests => 6;
+}
 
 untainted_ok($^O);
 BEGIN { delete @ENV{ qw( http_proxy HTTP_PROXY ) }; }
