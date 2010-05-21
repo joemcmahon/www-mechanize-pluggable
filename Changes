@@ -1,5 +1,9 @@
 Revision history for Perl module WWW::Mechanize::Pluggable
 
+1.06  Fri May 21 14:19:22 PDT 2010
+	- fix local/back.t to always use a localhost URL
+	  (fails if hostname doesn't resolve)
+
 1.05  Sat Mar 21 16:24:38 PDT 2009
 	- Updates to handle WWW::Mechanize API changes
 	  -- autoocheck now defaults to 1
