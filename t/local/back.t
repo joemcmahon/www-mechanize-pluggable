@@ -128,6 +128,7 @@ is( scalar @{$mech->mech->{page_stack}}, 0, "Pre-404 check" );
 
 my $server404 = HTTP::Daemon->new or die;
 my $server404url = $server404->url;
+$server404url =~ s{http://.*?:}{http://localhost:};
 
 SKIP: {
     skip "fork() unavailable", 10 
