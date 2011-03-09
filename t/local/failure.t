@@ -35,14 +35,18 @@ GOOD_PAGE: {
 BAD_PAGE: {
     my $badurl = "http://sdlfkjsdlfjks.blofgorongotron.xx-only-testing";
     $mech->get( $badurl );
+    SKIP: {
+        skip "DNSAdvantage causes these tests to fail",5
+            if $mech->success and $mech->content =~ /search.dnsadvantage.com/ms;
 
-    ok( !$mech->success, 'Failed the fetch' );
-    ok( !$mech->is_html, "Isn't HTML" );
-    ok( !defined $mech->title, "No title" );
+        ok( !$mech->success, 'Failed the fetch' );
+        ok( !$mech->is_html, "Isn't HTML" );
+        ok( !defined $mech->title, "No title" );
 
-    my @links = $mech->links;
-    is( scalar @links, 0, "No links" );
+        my @links = $mech->links;
+        is( scalar @links, 0, "No links" );
 
-    my @forms = $mech->forms;
-    is( scalar @forms, 0, "No forms" );
+        my @forms = $mech->forms;
+        is( scalar @forms, 0, "No forms" );
+    }
 }

@@ -3,8 +3,9 @@
 use warnings;
 use strict;
 use Test::More;
+my $DNSAdvantage_suckage;
 
-use constant NONEXISTENT => "http://sdflkjsdflkjs34.xx-nonexistent";
+use constant NONEXISTENT => "http://sdflkjsdflkjs34.xx-nonexistenti.com";
 
 BEGIN {
     eval "use Test::Exception";
@@ -22,14 +23,29 @@ AUTOCHECK_OFF: {
     isa_ok( $mech, 'WWW::Mechanize::Pluggable' );
 
     $mech->get( NONEXISTENT );
-    ok( !$mech->success, "Didn't fetch, but didn't die, either" );
+    if (!$mech->success) {
+      pass( "Didn't fetch, but didn't die, either" );
+    }
+    # Should NEVER work. Is DNSAdvantage f'ing us over?
+    elsif ($mech->content =~ /search.dnsadvantage.com/ms) {
+      pass( "Didn't fetch, regardless of DNSAdvantage's lies");
+      $DNSAdvantage_suckage++;
+    }
+    else {
+      fail( "Successful fetch, which should not happen");
+      diag( $mech->content );
+    } 
 }
 
 AUTOCHECK_ON: {
     my $mech = WWW::Mechanize::Pluggable->new( autocheck => 1 );
     isa_ok( $mech, 'WWW::Mechanize::Pluggable' );
 
+  SKIP: {
+    skip "DNSAdvantage makes a mockery of 404 errors", 1
+      if $DNSAdvantage_suckage;
     dies_ok {
         $mech->get( NONEXISTENT );
     } "Mech would die 4 u";
+  }
 }

@@ -12,7 +12,7 @@ BEGIN {
 my $server = LocalServer->spawn;
 isa_ok( $server, 'LocalServer' );
 
-my $agent = WWW::Mechanize::Pluggable->new;
+my $agent = WWW::Mechanize::Pluggable->new( autocheck => 0 );
 isa_ok( $agent, 'WWW::Mechanize::Pluggable', 'Created object' );
 $agent->quiet(1);
 
