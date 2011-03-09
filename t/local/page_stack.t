@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 8;
+use Test::More tests => 11;
 
 use lib 't/local';
 use LocalServer;
