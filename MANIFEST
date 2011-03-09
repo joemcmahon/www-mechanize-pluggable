@@ -70,7 +70,6 @@ t/local/get.t
 t/local/hooks.t
 t/local/LocalServer.pm
 t/local/log-server
-t/local/overload.t
 t/local/page_stack.t
 t/local/plugin.t
 t/local/referer-server
