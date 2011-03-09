@@ -4,6 +4,9 @@ use warnings;
 use strict;
 use Test::More;
 use URI;
+BEGIN {
+    eval "use Test::Taint";
+    ($^O) = ($^O =~ /.*/);
 
 ($^O) = ($^O =~ /.*/);
 BEGIN {

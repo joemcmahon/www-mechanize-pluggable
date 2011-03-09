@@ -23,7 +23,7 @@ $mech->back();
 is( $mech->base, $first_base, "Did the base get set back?" );
 is( $mech->title, $title, "Title set back?" );
 
-$mech->follow( "Images" );
+$mech->follow_link( "Images" );
 ok( $mech->success, 'Followed OK' );
 
 $mech->back();

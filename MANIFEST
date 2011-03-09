@@ -70,6 +70,7 @@ t/local/get.t
 t/local/hooks.t
 t/local/LocalServer.pm
 t/local/log-server
+t/local/overload.t
 t/local/page_stack.t
 t/local/plugin.t
 t/local/referer-server
@@ -137,4 +138,3 @@ t/upload.t
 t/warn.t
 t/warnings.t
 Todo
-WWW-Mechanize-Pluggable-0.01.tar

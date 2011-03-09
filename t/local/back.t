@@ -25,7 +25,7 @@ BEGIN {
 eval 'use Test::Memory::Cycle';
 my $cycle_not_available = $@;
 
-my $mech = WWW::Mechanize::Pluggable->new(cookie_jar => {});
+my $mech = WWW::Mechanize::Pluggable->new(cookie_jar => {}, autocheck => 0);
 isa_ok( $mech, "WWW::Mechanize::Pluggable" );
 ok(defined($mech->cookie_jar()),
    'this $mech starts with a cookie jar');
@@ -113,7 +113,7 @@ SKIP: {
     memory_cycle_ok( $mech, "No memory cycles found" );
 }
 
-$mech = WWW::Mechanize::Pluggable->new( autocheck=>0 );
+$mech = WWW::Mechanize::Pluggable->new( autocheck => 0);
 isa_ok( $mech, "WWW::Mechanize::Pluggable" );
 $mech->get( $server->url );
 ok( $mech->success, 'Got root URL' );
@@ -128,6 +128,7 @@ is( scalar @{$mech->mech->{page_stack}}, 0, "Pre-404 check" );
 
 my $server404 = HTTP::Daemon->new or die "Can't create an HTTP::Daemon\n";
 my $server404url = $server404->url;
+$server404url =~ s{http://.*?:}{http://localhost:};
 
 SKIP: {
     skip "fork() unavailable", 10 
@@ -180,5 +181,3 @@ SKIP: {
 
     memory_cycle_ok( $mech, "No memory cycles found" );
 }
-
-
