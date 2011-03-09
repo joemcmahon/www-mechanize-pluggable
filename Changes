@@ -1,4 +1,8 @@
 Revision history for Perl module WWW::Mechanize::Pluggable
+1.05  Tue Mar  8 22:40:31 PST 2011
+	- Updated several tests to match current WWW::Mechanize API.
+	- Hard-coded requirement for minimum level of WWW::Mechanize.
+
 1.04  Wed Sep 19 18:17:22 PDT 2007
 	- Updated t/local/back.t to be more cautious about whether it
           should try to kill the (possibly nonexistent) HTTP:Daemon.

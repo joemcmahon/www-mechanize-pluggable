@@ -83,7 +83,7 @@ my $parms = {
         'URI'               => 1.25,
         'URI::URL'          => 0,
         'URI::file'         => 0,
-	'WWW::Mechanize'    => 1.12,
+	'WWW::Mechanize'    => 1.66,
         'Data::Dump::Streamer' => 0,
     },
     test            => { TESTS => join( " ", @tests ) },
