@@ -15,6 +15,7 @@ BEGIN {
 
 BEGIN { delete @ENV{ qw( http_proxy HTTP_PROXY ) }; }
 BEGIN {
+    use lib "../inc";
     use_ok( 'WWW::Mechanize::Pluggable' );
 }
 

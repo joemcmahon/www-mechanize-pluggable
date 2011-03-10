@@ -1,4 +1,6 @@
 use Test::More tests=>3;
+use lib "../inc";
+
 use lib 't/lib';
 print `pwd`;
 use_ok qw(WWW::Mechanize::Pluggable);

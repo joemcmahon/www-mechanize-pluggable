@@ -4,7 +4,10 @@
 
 use Test::More tests => 2;
 
-BEGIN { use_ok( 'WWW::Mechanize::Pluggable' ); }
+BEGIN { 
+    use lib "../inc";
+    use_ok( 'WWW::Mechanize::Pluggable' ); 
+}
 
 my $object = WWW::Mechanize::Pluggable->new ();
 isa_ok ($object, 'WWW::Mechanize::Pluggable');

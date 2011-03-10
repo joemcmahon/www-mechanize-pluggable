@@ -1,6 +1,7 @@
 use Test::More tests=>4;
 
 BEGIN {
+  use lib "../inc";
   use_ok('WWW::Mechanize::Pluggable');
 }
 

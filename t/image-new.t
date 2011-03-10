@@ -6,6 +6,7 @@ use strict;
 use Test::More tests=>10;
 
 BEGIN {
+    use lib "../inc";
     use_ok( 'WWW::Mechanize::Image' );
 }
 

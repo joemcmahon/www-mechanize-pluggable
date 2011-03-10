@@ -8,6 +8,7 @@ use URI::file;
 
 BEGIN { delete @ENV{ qw( http_proxy HTTP_PROXY PATH IFS CDPATH ENV BASH_ENV) }; }
 BEGIN {
+    use lib "../inc";
     use_ok( 'WWW::Mechanize::Pluggable' );
 }
 

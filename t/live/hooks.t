@@ -1,4 +1,6 @@
 use Test::More tests=>5;
+    use FindBin;
+    use lib "$FindBin::Bin/../inc";
 use_ok(qw(WWW::Mechanize::Pluggable));
 
 sub pre_hook {

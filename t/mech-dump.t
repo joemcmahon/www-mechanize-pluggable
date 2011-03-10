@@ -2,6 +2,7 @@
 
 BEGIN {
     delete @ENV{ qw( IFS CDPATH ENV BASH_ENV PATH ) };
+    use lib "../inc";
 }
 
 use warnings;

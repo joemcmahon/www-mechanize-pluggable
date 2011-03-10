@@ -6,6 +6,8 @@ use LocalServer;
 
 BEGIN { delete @ENV{ qw( http_proxy HTTP_PROXY ) }; }
 BEGIN {
+    use FindBin;
+    use lib "$FindBin::Bin/../inc";
     use_ok( 'WWW::Mechanize::Pluggable' );
 }
 

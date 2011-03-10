@@ -9,6 +9,7 @@ BEGIN {
 }
 
 BEGIN {
+    use lib "../inc";
     use WWW::Mechanize::Plugin::Echo;
     use_ok( 'WWW::Mechanize::Pluggable' );
 }

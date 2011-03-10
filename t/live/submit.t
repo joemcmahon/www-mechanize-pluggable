@@ -5,6 +5,8 @@ use strict;
 use Test::More tests => 9;
 
 BEGIN {
+    use FindBin;
+    use lib "$FindBin::Bin/../inc";
     use_ok( 'WWW::Mechanize::Pluggable' );
 }
 

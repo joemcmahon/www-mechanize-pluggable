@@ -9,11 +9,12 @@ use Test::More tests => 19;
 BEGIN {
     delete @ENV{ grep { lc eq 'http_proxy' } keys %ENV };
     delete @ENV{ qw( IFS CDPATH ENV BASH_ENV ) };
-    use_ok( 'WWW::Mechanize' );
+    use lib "../../inc";
+    use_ok( 'WWW::Mechanize::Pluggable' );
 }
 
-my $mech = WWW::Mechanize->new();
-isa_ok( $mech, 'WWW::Mechanize', 'Created the object' );
+my $mech = WWW::Mechanize::Pluggable->new();
+isa_ok( $mech, 'WWW::Mechanize::Pluggable', 'Created the object' );
 
 my $server = LocalServer->spawn();
 isa_ok( $server, 'LocalServer' );

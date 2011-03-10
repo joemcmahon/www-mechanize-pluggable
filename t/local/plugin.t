@@ -6,6 +6,8 @@ use Test::Exception;
 use lib 't/local';
 use LocalServer;
 
+    use FindBin;
+    use lib "$FindBin::Bin/../inc";
 BEGIN { delete @ENV{ qw( http_proxy HTTP_PROXY ) }; }
 use WWW::Mechanize::Pluggable HelloWorld=>[helloworld=>'WORLD'];
 

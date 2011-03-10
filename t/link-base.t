@@ -6,6 +6,7 @@ use strict;
 use Test::More tests => 5;
 
 BEGIN {
+    use lib "../inc";
     use_ok( 'WWW::Mechanize::Link' );
 }
 

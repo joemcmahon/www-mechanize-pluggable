@@ -4,6 +4,8 @@ use FindBin;
 
 BEGIN { delete @ENV{ qw( http_proxy HTTP_PROXY ) }; }
 
+    use FindBin;
+    use lib "$FindBin::Bin/../inc";
 use Test::More tests => 13;
 use_ok( 'WWW::Mechanize::Pluggable' );
 

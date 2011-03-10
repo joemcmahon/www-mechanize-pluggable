@@ -17,6 +17,8 @@ and subsequently enriched to deal with RT ticket #8109.
 =cut
 
 BEGIN {
+    use FindBin;
+    use lib "$FindBin::Bin/../inc";
     use_ok( 'WWW::Mechanize::Pluggable' );
     delete @ENV{ qw( http_proxy HTTP_PROXY ) };
     delete @ENV{ qw( IFS CDPATH ENV BASH_ENV ) };

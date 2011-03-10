@@ -5,6 +5,7 @@ use strict;
 use Test::More tests => 12;
 
 BEGIN {
+    use lib "../inc";
     use_ok( 'WWW::Mechanize::Pluggable' );
 }
 

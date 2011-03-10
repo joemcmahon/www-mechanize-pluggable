@@ -13,6 +13,7 @@ BEGIN {
 }
 
 BEGIN {
+    use lib "../inc";
     use_ok( 'WWW::Mechanize::Pluggable' );
 }
 

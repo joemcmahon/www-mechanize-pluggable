@@ -1,4 +1,9 @@
 Revision history for Perl module WWW::Mechanize::Pluggable
+1.08  Wed Mar  9 18:22:56 PST 2011
+	- remove pluggable tests, as they test the included Module::Pluggable
+	- move Module::Pluggable to inc/ to avoid PAUSE indexing errors
+	- add "use lib '../inc'" as needed to tests
+
 1.07  Tue Mar  8 22:40:31 PST 2011
 	- Updated several tests to match current WWW::Mechanize API.
 	- Hard-coded requirement for minimum level of WWW::Mechanize.

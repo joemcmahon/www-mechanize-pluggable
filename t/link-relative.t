@@ -7,6 +7,7 @@ use Test::More tests => 6;
 use URI::file;
 
 BEGIN {
+    use lib "../inc";
     use_ok( 'WWW::Mechanize::Pluggable' );
 }
 

@@ -5,6 +5,8 @@ use strict;
 use Test::More tests => 7;
 use constant START => 'http://www.google.com/intl/en/';
 
+    use FindBin;
+    use lib "$FindBin::Bin/../inc";
 use_ok( 'WWW::Mechanize::Pluggable' );
 
 my $agent = WWW::Mechanize::Pluggable->new;

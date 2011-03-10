@@ -6,6 +6,8 @@ use Test::More tests=>15;
 
 use constant START => 'http://www.google.com/intl/en/';
 
+    use FindBin;
+    use lib "$FindBin::Bin/../inc";
 use_ok( 'WWW::Mechanize::Pluggable' );
 
 my $mech = WWW::Mechanize::Pluggable->new();

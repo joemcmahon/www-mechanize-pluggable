@@ -59,7 +59,6 @@ my @tests = glob File::Spec->catfile( 't', '*.t' );
 push( @tests, glob File::Spec->catfile( 't', 'local', '*.t' ) ) unless $skiplocal;
 push( @tests, glob File::Spec->catfile( 't', 'live', '*.t' ) ) if $runlive;
 push( @tests, glob File::Spec->catfile( 't', ($runtaint ? 'taint':'notaint'), '*.t' ) );
-push( @tests, glob File::Spec->catfile( 't', 'pluggable', '*.t' ) );
 
 my $parms = {
     'NAME'          => 'WWW::Mechanize::Pluggable',

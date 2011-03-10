@@ -5,6 +5,7 @@ use Test::More tests => 5;
 use URI::file;
 
 BEGIN { delete @ENV{ qw( http_proxy HTTP_PROXY PATH IFS CDPATH ENV BASH_ENV) }; }
+    use lib "../inc";
 use_ok( 'WWW::Mechanize::Pluggable' );
 
 my $mech = WWW::Mechanize::Pluggable->new( cookie_jar => undef );

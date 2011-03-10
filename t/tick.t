@@ -5,6 +5,7 @@ use Test::More tests => 5;
 use URI::file;
 
 delete @ENV{qw(PATH IFS CDPATH ENV BASH_ENV)};  # Placates taint-unsafe Cwd.pm in 5.6.1
+    use lib "../inc";
 use_ok( 'WWW::Mechanize::Pluggable' );
 
 my $mech = WWW::Mechanize::Pluggable->new( cookie_jar => undef );
