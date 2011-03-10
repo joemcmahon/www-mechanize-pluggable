@@ -1,4 +1,7 @@
 Revision history for Perl module WWW::Mechanize::Pluggable
+1.09  Wed Mar  9 18:51:08 PST 2011
+	- Require LWP 6, as it fixes the object click bug
+
 1.08  Wed Mar  9 18:22:56 PST 2011
 	- remove pluggable tests, as they test the included Module::Pluggable
 	- move Module::Pluggable to inc/ to avoid PAUSE indexing errors
