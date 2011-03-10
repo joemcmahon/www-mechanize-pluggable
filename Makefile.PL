@@ -4,7 +4,6 @@ use File::Spec;
 use strict;
 
 # Essentially a clone of WWW::Mech's Makefile.PL.
-my $runlive = grep /--runlive/i, @ARGV;
 my $skiplocal = grep /--skiplocal/i, @ARGV;
 my $runtaint = grep /--runtaint/i, @ARGV;
 
@@ -23,41 +22,8 @@ else {
 EOT
 }
 
-if ( $runlive ) {
-    require IO::Socket;
-    my $s = IO::Socket::INET->new(
-        PeerAddr => "www.google.com:80",
-        Timeout  => 10,
-    );
-    if ($s) {
-        close($s);
-        $runlive = 1;
-
-        print <<EOT;
-
-    You have enabled the live tests (run against Google). There's no guarantee
-    that they haven't changed something and broken these, so if these tests
-    fail, it may not be this module's fault.
-
-EOT
-    } else {
-        print <<EOT;
-
-    It seems that you are not directly connected to the Internet.  
-    of the WWW::Mechanize tests interact with websites such as Google,
-    in addition to its own internal tests.
-
-EOT
-
-        if ( prompt("Do you want to skip these tests?", "y") =~ /^y/i ) {
-            $runlive = 1;
-        }
-    } # failed connect
-}
-
 my @tests = glob File::Spec->catfile( 't', '*.t' );
 push( @tests, glob File::Spec->catfile( 't', 'local', '*.t' ) ) unless $skiplocal;
-push( @tests, glob File::Spec->catfile( 't', 'live', '*.t' ) ) if $runlive;
 push( @tests, glob File::Spec->catfile( 't', ($runtaint ? 'taint':'notaint'), '*.t' ) );
 
 my $parms = {
