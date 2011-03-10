@@ -51,15 +51,6 @@ t/lib/WWW/Mechanize/Plugin/Echo.pm
 t/link-base.t
 t/link-relative.t
 t/link.t
-t/live/back.t
-t/live/click.t
-t/live/follow.t
-t/live/follow_link.t
-t/live/form.t
-t/live/get.t
-t/live/hooks.t
-t/live/reload.t
-t/live/submit.t
 t/local/back.t
 t/local/back.t.orig
 t/local/click.t
@@ -113,4 +104,3 @@ t/upload.t
 t/warn.t
 t/warnings.t
 Todo
-WWW-Mechanize-Pluggable-1.07.tar.gz
