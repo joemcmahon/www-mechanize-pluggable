@@ -56,13 +56,15 @@ CLICK_BY_OBJECT_REFERENCE: {
     is( $clicky_button->value, 'Go', 'Named the right thing, too' );
 
     my $resp = $mech->click_button(input => $clicky_button);
-    {use Data::Dumper; local $Data::Dumper::Sortkeys=1;
-        diag Dumper( $resp->request )}
 
     like( $mech->uri, qr/formsubmit/, 'Clicking on button by object reference' );
     {
         local $TODO = "This still doesn't work quite right, though the rest does";
-        like( $mech->uri, qr/submit=Go/,  'Correct button was pressed' );
+        like( $mech->uri, qr/submit=Go/,  'Correct button was pressed' ) or
+            do {
+                  use Data::Dumper; local $Data::Dumper::Sortkeys=1;
+                  diag Dumper( $resp->request )
+            };
     }
     like( $mech->uri, qr/cat_foo/,    'Parameters got transmitted OK' );
 
