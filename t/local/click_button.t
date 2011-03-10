@@ -50,7 +50,6 @@ CLICK_BY_NAME: {
 }
 
 CLICK_BY_OBJECT_REFERENCE: {
-    local $TODO = q{It seems that calling ->click() on an object is broken in LWP. Need to investigate further.};
 
     my $clicky_button = $form->find_input( undef, 'submit' );
     isa_ok( $clicky_button, 'HTML::Form::Input', 'Found the submit button' );
