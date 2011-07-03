@@ -1,4 +1,4 @@
-#!perl 
+#!perl -T
 
 use warnings;
 use strict;
@@ -7,15 +7,16 @@ use URI;
 BEGIN {
     eval "use Test::Taint";
     ($^O) = ($^O =~ /.*/);
+}
 
-($^O) = ($^O =~ /.*/);
 BEGIN {
     eval "use Test::Taint";
     plan skip_all => "Test::Taint required for checking taintedness" if $@;
-    plan tests=>6;
+    plan tests=>7;
 }
 
-untainted_ok($^O);
+untainted_ok($^O, "\$^O is untainted");
+
 BEGIN { delete @ENV{ qw( http_proxy HTTP_PROXY ) }; }
 BEGIN {
     use lib "../inc";
