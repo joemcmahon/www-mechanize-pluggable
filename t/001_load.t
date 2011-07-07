@@ -5,7 +5,8 @@
 use Test::More tests => 2;
 
 BEGIN { 
-    use lib "../inc";
+    use FindBin;
+    use lib "$FindBin::Bin/lib";
     use_ok( 'WWW::Mechanize::Pluggable' ); 
 }
 

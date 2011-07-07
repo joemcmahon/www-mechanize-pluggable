@@ -1,7 +1,7 @@
-#!perl -Tw
-
 use Test::More tests => 2;
-use lib "../inc";
+use FindBin;
+
+use lib "$FindBin::Bin/lib";
 
 use_ok( 'WWW::Mechanize::Pluggable' );
 use_ok( 'WWW::Mechanize::Link' );

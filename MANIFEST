@@ -1,6 +1,4 @@
 Changes
-inc/Module/Pluggable.pm
-lib/Module/Pluggable.pm
 lib/WWW/Mechanize/Pluggable.pm
 lib/WWW/Mechanize/Pluggable/Design.pm
 lib/WWW/Mechanize/Plugin/Cookbook.pm
@@ -18,7 +16,6 @@ t/add_header.t
 t/aliases.t
 t/area_link.html
 t/area_link.t
-t/autocheck.t
 t/clone.t
 t/die.t
 t/errors.err
@@ -73,7 +70,6 @@ t/mech-dump.t
 t/new.t
 t/notaint/00.load.t
 t/notaint/aliases.t
-t/notaint/autocheck.t
 t/notaint/clone.t
 t/notaint/die.t
 t/notaint/new.t
@@ -90,7 +86,6 @@ t/select.t
 t/taint.t
 t/taint/00.load.t
 t/taint/aliases.t
-t/taint/autocheck.t
 t/taint/clone.t
 t/taint/die.t
 t/taint/new.t
@@ -104,3 +99,8 @@ t/upload.t
 t/warn.t
 t/warnings.t
 Todo
+MYMETA.yml
+t/helpful_ISP/autocheck.t
+t/lib/Module/Pluggable.pm
+t/normal_ISP/autocheck.t
+

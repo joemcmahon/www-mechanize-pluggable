@@ -1,4 +1,7 @@
 Revision history for Perl module WWW::Mechanize::Pluggable
+1.11  Wed Jul  6 21:17:48 PDT 2011
+	- clone.t shouldn't be run with taint on
+
 1.10  Sat Jul  2 18:56:43 PDT 2011
         - several other "helpful" ISPs cause the 404 test to fail;
           detect this before testing anything and adjust accordingly

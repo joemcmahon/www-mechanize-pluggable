@@ -1,10 +1,13 @@
-#!perl -Tw
+#!perl
+use warnings;
 
 use strict;
 use Test::More tests => 3;
 
 BEGIN {
-    use lib "../inc";
+    use FindBin;
+
+    use lib "$FindBin::Bin/lib";
     use_ok( 'WWW::Mechanize::Pluggable' );
 }
 

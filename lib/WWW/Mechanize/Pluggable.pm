@@ -135,9 +135,13 @@ sub import {
   my ($class, %plugin_args) = @_; 
   foreach my $plugin (__PACKAGE__->plugins) {
     my ($plugin_name) = ($plugin =~ /.*::(.*)$/);
-    if (exists $plugin_args{$plugin_name} and 
-        $plugin->can('import')) {
-      $plugin->import( @{ $plugin_args{$plugin_name} } );
+    if ($plugin->can('import')) {
+      if (exists $plugin_args{$plugin_name}) {
+        $plugin->import( @{ $plugin_args{$plugin_name} } );
+      }
+      else {
+        $plugin->import();
+      }
     }
   }
 }
@@ -341,49 +345,50 @@ sub AUTOLOAD {
 
   # figure out what was supposed to be called.
   (my $super_sub = $AUTOLOAD) =~ s/::Pluggable//;
-  my ($plain_sub) = ($AUTOLOAD =~ /.*::(.*)$/);
+  my ($class, $plain_sub) = ($AUTOLOAD =~ /\A(.*)::(.*)$/);
 
-  # Record the method name so plugins can check it.
-  # We check for $self being a ref because this could
-  # be a class method call. (Plugins won't be able to
-  # re-call class methods, but I can't think of a reason
-  # why we'd need that for now, so we'll skip it.)
-  $self->last_method($plain_sub) if ref $self;
-
+  # Determine if this is a class method call or a subroutine call. Getting here
+  # for either means that they haven't been defined and we don't know how to
+  # find them. 
+  my $call_type;
   if (scalar @_ == 0 or !defined $_[0] or !ref $_[0]) {
-    no strict 'refs';
-    $super_sub->(@_);
+    $call_type = ( $_[0] eq $class ? 'class method' :  'subroutine' );
   }
-  else {
-    my ($ret, @ret) = "";
-    shift @_;
-    my $skip;
-    if (my $pre_hook = $self->{PreHooks}->{$plain_sub}) {
-      # skip call to actual method if pre_hook returns false.
-      # pre_hook must muck with Mech object to really return anything.
-      foreach my $hook (@$pre_hook) {
-        my $result = $hook->($self, $self->mech, @_);
-        $skip ||=  (defined $result) && ($result == -1);
-      }
+
+  die "Can't resolve $call_type $plain_sub(). Did your plugins define it?"
+    if $call_type;
+ 
+  # Record the method name so plugins can check it.
+  $self->last_method($plain_sub);
+
+  my ($ret, @ret) = "";
+  shift @_;
+  my $skip;
+  if (my $pre_hook = $self->{PreHooks}->{$plain_sub}) {
+    # skip call to actual method if pre_hook returns false.
+    # pre_hook must muck with Mech object to really return anything.
+    foreach my $hook (@$pre_hook) {
+      my $result = $hook->($self, $self->mech, @_);
+      $skip ||=  (defined $result) && ($result == -1);
     }
-    unless ($skip) {
-      if (wantarray) {
-        @ret = eval { $self->mech->$plain_sub(@_) };
-        croak $@ if $@;
-      }
-      else {
-        $ret = eval { $self->mech->$plain_sub(@_) };
-        croak $@ if $@;
-      }
-    }
-    if (my $post_hook = $self->{PostHooks}->{$plain_sub}) {
-      # Same deal here. Anything you want to return has to go in the object.
-      foreach my $hook (@$post_hook) {
-        $hook->($self, $self->mech, @_);
-      }
-    }
-    wantarray ? @ret : $ret;
   }
+  unless ($skip) {
+    if (wantarray) {
+      @ret = eval { $self->mech->$plain_sub(@_) };
+      croak $@ if $@;
+    }
+    else {
+      $ret = eval { $self->mech->$plain_sub(@_) };
+      croak $@ if $@;
+    }
+  }
+  if (my $post_hook = $self->{PostHooks}->{$plain_sub}) {
+    # Same deal here. Anything you want to return has to go in the object.
+    foreach my $hook (@$post_hook) {
+      $hook->($self, $self->mech, @_);
+    }
+  }
+  wantarray ? @ret : $ret;
 }
 
 =head2 clone
