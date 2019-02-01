@@ -1,4 +1,8 @@
 Revision history for Perl module WWW::Mechanize::Pluggable
+1.13  Thu Jan 31 19:08:19 PST 2018
+  - Remove MYMETA.yml
+    https://rt.cpan.org/Ticket/Display.html?id=108160
+
 1.12  Fri Jul  8 22:57:10 PDT 2011
 	- Update prereqs: add HTTP::Cookies
 
